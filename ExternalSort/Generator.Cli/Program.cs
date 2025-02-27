@@ -4,17 +4,17 @@ namespace Generator.Cli
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             var faker = new Faker("en");
-            var path = "f:/temp/1gb";
-
-            var size = 1024 * 1024 * 1024;
+            var path = "f:/temp/1v1gb";
+            var gigabyte = 1024 * 1024 * 1024;
+            long size = gigabyte;//(long)gigabyte * 10;
             using (var file = new StreamWriter(path)) 
             {
                 do
                 {
-                    file.WriteLine($"{faker.Random.Long(1)}. {faker.Random.Words()}");
+                    await file.WriteLineAsync($"{faker.Random.Long(1)}. {faker.Random.Words(10)}");
 
                 } while (file.BaseStream.Length < size);
 
