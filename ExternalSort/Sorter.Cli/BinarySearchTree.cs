@@ -1,60 +1,80 @@
 ﻿namespace Sorter.Cli
 {
-    class Node
+    internal class Node
     {
-        public string[] Data { get; set; }
-        public Node? Left, Right;
+        public string Data { get; init; }
+        public string[] Values { get; init; }
+        public Node? Left { get; set; }
+        public Node? Right { get; set; }
 
-        public Node(string[] data)
+        public Node(string data, string[] values)
         {
             Data = data;
-            Left = Right = null;
+            Values = values;
         }
     }
 
-    class BinarySearchTree
+    internal class BinarySearchTree
     {
         public int Count { get; private set; }
         public Node? Root;
 
         public void Insert(string data)
         {
-            Root = InsertRec(Root, data.Split(". "));
+            Root = InsertRec(Root, data, data.Split(". "));
         }
 
-        private Node InsertRec(Node? root, string[] data)
+        private Node InsertRec(Node? node, string data, string[] values)
         {
-            if (root == null)
+            if (node == null)
             {
                 Count++;
-                return new Node(data);
+                return new Node(data, values);
             }
 
-            if (Compare(root, data) < 0)
-                root.Left = InsertRec(root.Left, data);
+            if (Compare(node, values) < 0)
+                node.Left = InsertRec(node.Left, data, values);
             else
-                root.Right = InsertRec(root.Right, data);
+                node.Right = InsertRec(node.Right, data, values);
 
-            return root;
+            return node;
         }
 
         private static int Compare(Node root, string[] data)
         {
             var a = data[1];
-            var b = root.Data[1];
+            var b = root.Values[1];
 
             var result = a.CompareTo(b);
+
+            if (result == 0)
+            {
+                var numerica = long.Parse(data[0]);
+                var numericb = long.Parse(root.Values[0]);
+
+                return numerica.CompareTo(numericb);
+            }
+
             return result;
-            //return string.Compare(data, root.Data);
         }
 
-        public void InOrderTraversal(Node? root, StreamWriter writer)
+        public IEnumerable<Node> Ordered { get => Traverse(Root); }
+
+        private static IEnumerable<Node> Traverse(Node? node)
         {
-            if (root != null)
+            if (node is not null)
             {
-                InOrderTraversal(root.Left, writer);
-                writer.WriteLine(root.Data[0] + ". " + root.Data[1]);
-                InOrderTraversal(root.Right, writer);
+                foreach (var left in Traverse(node.Left))
+                {
+                    yield return left;
+                }
+
+                yield return node;
+
+                foreach (var right in Traverse(node.Right))
+                {
+                    yield return right;
+                }
             }
         }
     }

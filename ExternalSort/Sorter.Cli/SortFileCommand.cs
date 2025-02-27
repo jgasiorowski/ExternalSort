@@ -1,4 +1,5 @@
 ﻿using Spectre.Console.Cli;
+using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
@@ -79,7 +80,11 @@ namespace Sorter.Cli
                     }
                 }
 
-                sortingBuffer.InOrderTraversal(sortingBuffer.Root, outfile);
+                foreach (var item  in sortingBuffer.Ordered)
+                {
+                    outfile.WriteLine(item.Data);
+                }
+
                 sortingBuffer = new BinarySearchTree();
             } while (!finished);
 
@@ -128,7 +133,10 @@ namespace Sorter.Cli
         static void StoreChunk(string workDirectory, BinarySearchTree structure, int index, long prefix)
         {
             using var streamWriter = new StreamWriter(Path.Combine(workDirectory, prefix.ToString() + "_" + index.ToString()));
-            structure.InOrderTraversal(structure.Root, streamWriter);
+            foreach (var item in structure.Ordered)
+            {
+                streamWriter.WriteLine(item.Data);
+            }
         }
 
         private static void CompareLines(string inputPath, string outputPath)
